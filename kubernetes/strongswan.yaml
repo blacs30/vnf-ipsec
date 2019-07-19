@@ -1,0 +1,97 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: strongswan-deployment
+  labels:
+    app: strongswan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: strongswan
+  template:
+    metadata:
+      labels:
+        app: strongswan
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - node1
+      hostNetwork: true
+      containers:
+      - name: strongswan
+        image: blacs30/strongswan-k8s:latest
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        ports:
+        - name: isakmp
+          containerPort: 500
+          protocol: UDP
+        - name: ipsec-nat-t
+          containerPort: 4500
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: lib-modules
+        env:
+        # - name: SET_ROUTE_DEFAULT_TABLE
+          # value: "TRUE"
+        - name: IPSEC_LOCALIP
+          value: "%any"
+          # IF left empty it gets the public IP of the node
+        - name: IPSEC_LOCALID
+          value: IP-OR-DOMAIN
+        - name: IPSEC_LOCALNET
+          value: 10.240.0.0/20
+        - name: IPSEC_REMOTEIP
+          value: IP-OR-DOMAIN
+        - name: IPSEC_REMOTEID
+          value: IP-OR-DOMAIN
+        - name: IPSEC_REMOTENET
+          value: 192.168.0.0/24
+        - name: IPSEC_PSK
+          value: secret-psk
+        - name: IPSEC_KEYEXCHANGE
+          value: ikev2
+        - name: IPSEC_ESPCIPHER
+          value: aes256-sha256-modp2048!
+        - name: IPSEC_IKECIPHER
+          value: aes256-sha256-modp2048!
+        - name: IPSEC_LIFETIME
+          value: 1h
+        - name: IPSEC_IKELIFETIME
+          value: 3h
+        - name: IPSEC_FORCEUDP
+          value: "yes"
+        - name: IPSEC_IKEREAUTH
+          value: "yes"
+        - name: IPSEC_INTERFACES
+          value: eth0,eth1
+        - name: DEBUG
+          value: "yes"
+        livenessProbe:
+            failureThreshold: 10
+            exec:
+              command:
+              - wget
+              - http://check-host
+              - --no-check-certificate
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 5
+      volumes:
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules

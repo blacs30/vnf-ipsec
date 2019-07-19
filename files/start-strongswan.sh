@@ -1,6 +1,12 @@
 #!/bin/sh
 set -eo pipefail
 
+if [ -z "$IPSEC_LOCALID" ]
+then
+ export	IPSEC_LOCALID=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
+fi
+
+
 _initialize() {
     echo "Start: run initializations."
     _create_vti
@@ -215,7 +221,9 @@ else
     fi
 fi
 
+# Listen on this port as health check
+# nc -k -l -p 64500 &
+
 _start_strongswan
 
 _term
-
