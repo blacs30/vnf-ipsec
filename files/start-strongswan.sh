@@ -3,13 +3,13 @@ set -eo pipefail
 
 if [ -z "$IPSEC_LOCALID" ]
 then
- export	IPSEC_LOCALID=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
+ export IPSEC_LOCALID=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
 fi
 
 
-if [ -z "$IPSEC_PSK_DISABLE" ]
+if [ -n "$IPSEC_PSK_DISABLE" ]
 then
-	rm -f /etc/confd/conf.d.disabled/strongswan.psk-template.secret.toml
+  rm -f /etc/confd/conf.d.disabled/strongswan.psk-template.secret.toml
 fi
 
 
@@ -27,6 +27,11 @@ _create_vti(){
     if [ -n "$IPSEC_VTI_KEY" ]; then
         echo "IPSEC_VTI_KEY set, creating VTI interface."
         set -e
+
+        RESOLVE_REMOTEIP=$(dig @resolver1.opendns.com A ${IPSEC_REMOTEIP} +short -4)
+        if [ -n "$RESOLVE_REMOTEIP" ]; then
+          IPSEC_REMOTEIP=${RESOLVE_REMOTEIP}
+        fi
 
         echo "Start: load ip_vti kernel module."
         if grep -qe "^ip_vti\>" /proc/modules; then
