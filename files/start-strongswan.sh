@@ -7,6 +7,13 @@ then
 fi
 
 
+if [ -z "$IPSEC_PSK_DISABLE" ]
+then
+	rm -f /etc/confd/conf.d.disabled/strongswan.psk-template.secret.toml
+fi
+
+
+
 _initialize() {
     echo "Start: run initializations."
     _create_vti
