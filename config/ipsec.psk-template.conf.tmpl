@@ -4,28 +4,7 @@
 
 config setup
 	# strictcrlpolicy=yes
-	# uniqueids = no
-
-# Add connections here.
-
-# Sample VPN connections
-
-#conn sample-self-signed
-#      leftsubnet=10.1.0.0/16
-#      leftcert=selfCert.der
-#      leftsendcert=never
-#      right=192.168.0.2
-#      rightsubnet=10.2.0.0/16
-#      rightcert=peerCert.der
-#      auto=start
-
-#conn sample-with-ca-cert
-#      leftsubnet=10.1.0.0/16
-#      leftcert=myCert.pem
-#      right=192.168.0.2
-#      rightsubnet=10.2.0.0/16
-#      rightid="C=CH, O=Linux strongSwan CN=peer name"
-#      auto=start
+	uniqueids = no
 
 conn sts-base
 	fragmentation=yes
@@ -53,3 +32,40 @@ conn site-static-ip
 	{{if exists "/vti/key" -}}
 	mark={{getv "/vti/key"}}
 	{{- end}}
+
+conn default-second
+  keyexchange=ikev2
+	fragmentation=yes
+	type=tunnel
+  ikelifetime=60m
+  forceencaps={{getv "/forceudp" "yes"}}
+  keylife=20m
+  rekeymargin=3m
+  keyingtries=1
+  rekey=no
+	ike=aes256-sha1-modp1024,aes128-sha1-modp1024,3des-sha1-modp1024! # Win7 is aes256, sha-1, modp1024; iOS is aes256, sha-256, modp1024; OS X is 3DES, sha-1, modp1024
+  esp=aes256-sha256,aes256-sha1,3des-sha1! # Win 7 is aes256-sha1, iOS is aes256-sha256, OS X is 3des-shal1
+
+  dpdaction=clear
+  dpddelay=120s
+  auto=add
+
+
+conn roadwarrior
+  also=default-second
+  left=%any
+  leftid=@vpn.lisowski.cf
+  leftauth=pubkey
+  leftcert=serverCert.pem
+  leftsendcert=always
+  leftsubnet=0.0.0.0/0
+  # leftupdown=/etc/ipsec.d/firewall.updown
+  right=%any
+	rightid=%any
+  rightauth=pubkey
+  # rightauth=eap-mschapv2
+	rightsendcert=never
+  # eap_identity=%identity
+  # eap_identity=%any
+  rightsourceip=192.168.50.0/24
+  rightdns=1.1.1.1,8.8.8.8

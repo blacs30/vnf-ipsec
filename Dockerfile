@@ -21,6 +21,7 @@ RUN wget -O confd https://github.com/kelseyhightower/confd/releases/download/v0.
         mv confd /usr/local/bin/ && \
         chmod +x /usr/local/bin/confd
 
+COPY files/firewall.updown /etc/ipsec.d/firewall.updown
 COPY files/ipsec.conf /etc/ipsec.conf
 COPY files/ipsec.secrets /etc/ipsec.secrets
 COPY config/*.tmpl /etc/confd/templates/

@@ -12,7 +12,8 @@ then
   rm -f /etc/confd/conf.d.disabled/strongswan.psk-template.secret.toml
 fi
 
-
+# Enable system forward
+sysctl -w net.ipv4.ip_no_pmtu_disc=1
 
 _initialize() {
     echo "Start: run initializations."
