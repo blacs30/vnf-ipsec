@@ -3,48 +3,48 @@
 # basic configuration
 
 config setup
-	# strictcrlpolicy=yes
-	uniqueids = no
+  # strictcrlpolicy=yes
+  uniqueids = no
 
 conn sts-base
-	fragmentation=yes
-	dpdaction=restart
-	ike={{getv "/ikecipher"}}
-	esp={{getv "/espcipher"}}
-	keyingtries=%forever
-	forceencaps={{getv "/forceudp" "yes"}}
-	lifetime={{getv "/lifetime" "3600"}}
-	ikelifetime={{getv "/ikelifetime" "10800"}}
-	reauth={{getv "/ikereauth" "yes"}}
+  fragmentation=yes
+  dpdaction=restart
+  ike={{getv "/ikecipher"}}
+  esp={{getv "/espcipher"}}
+  keyingtries=%forever
+  forceencaps={{getv "/forceudp" "yes"}}
+  lifetime={{getv "/lifetime" "3600"}}
+  ikelifetime={{getv "/ikelifetime" "10800"}}
+  reauth={{getv "/ikereauth" "yes"}}
 
 conn site-static-ip
-	also=sts-base
-	keyexchange={{getv "/keyexchange"}}
-	leftsubnet={{getv "/localnet"}}
-	left={{getv "/localip"}}
-	leftid={{getv "/localid"}}
-	rightsubnet={{getv "/remotenet"}}
-	right={{getv "/remoteip"}}
-	rightid={{getv "/remoteid"}}
-	auto=route
-	leftauth=psk
-	rightauth=psk
-	{{if exists "/vti/key" -}}
-	mark={{getv "/vti/key"}}
-	{{- end}}
+  also=sts-base
+  keyexchange={{getv "/keyexchange"}}
+  leftsubnet={{getv "/localnet"}}
+  left={{getv "/localip"}}
+  leftid={{getv "/localid"}}
+  rightsubnet={{getv "/remotenet"}}
+  right={{getv "/remoteip"}}
+  rightid={{getv "/remoteid"}}
+  auto=route
+  leftauth=psk
+  rightauth=psk
+  {{if exists "/vti/key" -}}
+  mark={{getv "/vti/key"}}
+  {{- end}}
 
 conn default-second
   pfs=no
   keyexchange=ikev2
-	fragmentation=yes
-	type=tunnel
+  fragmentation=yes
+  type=tunnel
   ikelifetime=60m
   forceencaps={{getv "/forceudp" "yes"}}
   keylife=20m
   rekeymargin=3m
   keyingtries=1
   rekey=no
-	ike=aes256-sha1-modp1024,aes128-sha1-modp1024,3des-sha1-modp1024! # Win7 is aes256, sha-1, modp1024; iOS is aes256, sha-256, modp1024; OS X is 3DES, sha-1, modp1024
+  ike=aes256-sha1-modp1024,aes128-sha1-modp1024,3des-sha1-modp1024! # Win7 is aes256, sha-1, modp1024; iOS is aes256, sha-256, modp1024; OS X is 3DES, sha-1, modp1024
   esp=aes256-sha256,aes256-sha1,3des-sha1! # Win 7 is aes256-sha1, iOS is aes256-sha256, OS X is 3des-shal1
 
   dpdaction=clear
@@ -62,10 +62,10 @@ conn roadwarrior
   leftsubnet=0.0.0.0/0
   # leftupdown=/etc/ipsec.d/firewall.updown
   right=%any
-	rightid=%any
+  rightid=%any
   rightauth=pubkey
   # rightauth=eap-mschapv2
-	rightsendcert=never
+  rightsendcert=never
   # eap_identity=%identity
   # eap_identity=%any
   rightsourceip={{getv "/rightsourceip"}}
