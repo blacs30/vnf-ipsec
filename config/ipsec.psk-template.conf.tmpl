@@ -34,6 +34,7 @@ conn site-static-ip
 	{{- end}}
 
 conn default-second
+  pfs=no
   keyexchange=ikev2
 	fragmentation=yes
 	type=tunnel
