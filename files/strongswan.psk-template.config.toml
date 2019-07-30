@@ -5,7 +5,9 @@ dest = "/etc/ipsec.config.d/ipsec.psk-template.conf"
 keys = [
     "/localip",
     "/localid",
+    "/leftidrw",
     "/remoteip",
+    "/rightsourceip",
     "/remoteid",
     "/localnet",
     "/remotenet",

@@ -55,7 +55,7 @@ conn default-second
 conn roadwarrior
   also=default-second
   left=%any
-  leftid=@vpn.lisowski.cf
+  leftid={{getv "/leftidrw"}}
   leftauth=pubkey
   leftcert=serverCert.pem
   leftsendcert=always
@@ -68,5 +68,5 @@ conn roadwarrior
 	rightsendcert=never
   # eap_identity=%identity
   # eap_identity=%any
-  rightsourceip=192.168.50.0/24
+  rightsourceip={{getv "/rightsourceip"}}
   rightdns=1.1.1.1,8.8.8.8
